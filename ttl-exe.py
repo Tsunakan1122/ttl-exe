@@ -1,8 +1,10 @@
+# Version 1.0.1
 import sys
 import os
 import subprocess
-import time
-from datetime import datetime
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s:%(name)s - %(message)s", filename="ttl-exe.log")
 
 argc=sys.argv
 ttlexe="C:\\Program Files (x86)\\teraterm\\ttpmacro.exe"
@@ -13,19 +15,18 @@ try:
         if file.lower().endswith(".ttl"):
             file=argc[1]+"\\"+file
             file=os.path.abspath(file)
-            subprocess.run([ttlexe, file], stdout=True)
-            time.sleep(10)
+            logging.info("Start {}".format(file))
+            subprocess.run([ttlexe, file], stdout=True, check=True, shell=True)
+
 except IndexError as e:
-    errlog=open("error.log", "a", encoding='UTF-8')
-    errlog.write(str(datetime.now())+"\n")
-    errlog.write("type: "+str(type(e))+"\n")
-    errlog.write("args: "+str(e.args)+"\n")
-    errlog.write("Error: "+str(e)+"\n")
-    errlog.close()
+    logging.error("type: "+str(type(e)))
+    logging.error("args: "+str(e.args))
+    logging.error("Error: "+str(e))
+
 except Exception as e:
-    errlog=open("error.log", "a", encoding="UTF-8")
-    errlog.write(str(datetime.now())+"\n")
-    errlog.write("type: "+str(type(e))+"\n")
-    errlog.write("args: "+str(e.args)+"\n")
-    errlog.write("Error: "+str(e)+"\n")
-    errlog.close()
+    logging.error("type: "+str(type(e)))
+    logging.error("args: "+str(e.args))
+    logging.error("Error: "+str(e))
+
+finally:
+    logging.info("Stop ttl-exe")
